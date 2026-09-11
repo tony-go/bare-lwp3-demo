@@ -1,82 +1,67 @@
-const { Central } = require('bare-bluetooth')
+const tty = require('bare-tty')
+const { connect, PORT_A } = require('./lib/hub')
 
-const LWP3_SERVICE = '00001623-1212-efde-1623-785feabcd123'
-const PORT_A = 0x00
 const SPEED = 50
-const RUN_MS = 2000
 
-function startSpeed(port, speed) {
-  return Uint8Array.from([0x09, 0x00, 0x81, port, 0x11, 0x07, speed & 0xff, 0x64, 0x00])
+const BINDINGS = [
+  ['k', 'move'],
+  ['l', 'stop'],
+  ['q', 'quit and switch the hub off']
+]
+
+const out = new tty.WriteStream(1)
+
+function say(line) {
+  out.write(line + '\r\n')
 }
 
-const central = new Central()
-let hub = null
-let lwp3 = null
-let connecting = false
+async function main() {
+  say('bare-lego')
+  say('press the green button on the hub...')
 
-central.on('stateChange', (state) => {
-  if (state === 'poweredOn') {
-    console.log('scanning... press the green button on the hub')
-    central.startScan([LWP3_SERVICE])
-  } else if (state === 'poweredOff' || state === 'unauthorized' || state === 'unsupported') {
-    console.error('bluetooth ' + state)
-    Bare.exit(1)
-  }
-})
+  const hub = await connect()
 
-central.on('discover', (found) => {
-  if (connecting) return
-  connecting = true
-  console.log('hub found: ' + found.name)
-  central.stopScan()
-  central.connect(found)
-})
+  say('connected to ' + hub.name)
+  say('')
+  for (const [key, action] of BINDINGS) say('  ' + key + '  ' + action)
+  say('')
 
-central.on('connect', (peripheral) => {
-  console.log('connected')
-  hub = peripheral
+  const keyboard = new tty.ReadStream(0)
+  keyboard.setRawMode(true)
 
-  hub.on('servicesDiscover', (services) => {
-    hub.discoverCharacteristics(services[0])
-  })
-
-  hub.on('characteristicsDiscover', (service, characteristics) => {
-    lwp3 = characteristics.find((c) => c.uuid.toLowerCase().includes('1624'))
-    if (!lwp3) {
-      console.error('lwp3 characteristic not found')
-      Bare.exit(1)
+  keyboard.on('data', (data) => {
+    const key = data.toString()
+    if (key === 'k') {
+      hub.motor(PORT_A, SPEED)
+      say('move')
+    } else if (key === 'l') {
+      hub.motor(PORT_A, 0)
+      say('stop')
+    } else if (key === 'q' || key === '\x03') {
+      say('switching the hub off')
+      hub.off()
+      setTimeout(() => exit(0), 1500)
     }
-    hub.subscribe(lwp3)
   })
 
-  hub.on('notifyState', (characteristic, isNotifying) => {
-    if (!isNotifying) return
-    console.log('motor A: speed ' + SPEED + '% for ' + RUN_MS + 'ms')
-    hub.write(lwp3, startSpeed(PORT_A, SPEED), false)
-    setTimeout(stop, RUN_MS)
+  hub.on('disconnect', () => {
+    say('hub disconnected')
+    exit(0)
   })
 
   hub.on('error', (err) => {
-    console.error(err.message)
-    Bare.exit(1)
+    say('error: ' + err.message)
+    exit(1)
   })
 
-  hub.discoverServices([LWP3_SERVICE])
-})
+  function exit(code) {
+    keyboard.setRawMode(false)
+    keyboard.destroy()
+    Bare.exit(code)
+  }
+}
 
-central.on('disconnect', () => {
-  console.log('done')
-  central.destroy()
-  Bare.exit(0)
-})
-
-central.on('error', (err) => {
+main().catch((err) => {
   console.error(err.message)
   Bare.exit(1)
 })
-
-function stop() {
-  console.log('motor A: stop')
-  hub.write(lwp3, startSpeed(PORT_A, 0), false)
-  setTimeout(() => central.disconnect(hub), 300)
-}

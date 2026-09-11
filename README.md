@@ -16,7 +16,15 @@ Turn on the hub with its green button (the LED blinks while it advertises), then
 bare index.js
 ```
 
-The script scans for the LWP3 service, connects, spins the motor on port A at 50% for 2 seconds, stops it, and disconnects. On first run macOS will ask for Bluetooth permission for your terminal.
+The CLI connects to the hub and stays connected, so the hub never powers itself off during a session. Key bindings:
+
+```
+k  move
+l  stop
+q  quit and switch the hub off
+```
+
+On first run macOS will ask for Bluetooth permission for your terminal.
 
 ## How it works
 
