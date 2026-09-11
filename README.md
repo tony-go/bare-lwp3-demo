@@ -31,6 +31,14 @@ On startup the CLI prints the battery level and refuses to start if a motor is m
 
 On first run macOS will ask for Bluetooth permission for your terminal.
 
+## Web remote
+
+```
+npm run remote
+```
+
+Same connection and calibration, but instead of the keyboard the process serves a touch remote over HTTP. Open the printed URL on a phone on the same wifi: a pad with FWD / REV / LEFT / RIGHT / STOP, plus a power-off button. One Bare process speaks BLE to the car and HTTP to the phone.
+
 ## How it works
 
 The hub exposes a single GATT characteristic (`00001624-1212-efde-1623-785feabcd123`). Every command is a small binary message written to it without response. Spinning a motor is 9 bytes: a Port Output Command (`0x81`) with the StartSpeed subcommand (`0x07`), the port id, and the speed.

@@ -8,10 +8,12 @@
   },
   "files": [
     "index.js",
+    "remote.js",
     "lib"
   ],
   "scripts": {
     "start": "bare index.js",
+    "remote": "bare remote.js",
     "format": "prettier --write . && lunte --fix",
     "lint": "prettier --check . && lunte"
   },
@@ -28,7 +30,9 @@
   "dependencies": {
     "bare-bluetooth": "^0.3.0",
     "bare-events": "^2.9.2",
+    "bare-http1": "^4.6.1",
     "bare-lwp3": "file:../bare-lwp3",
+    "bare-os": "^3.9.3",
     "bare-tty": "^5.2.1"
   },
   "devDependencies": {
