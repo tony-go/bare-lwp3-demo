@@ -11,6 +11,7 @@
     "lib"
   ],
   "scripts": {
+    "start": "bare index.js",
     "format": "prettier --write . && lunte --fix",
     "lint": "prettier --check . && lunte"
   },

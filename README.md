@@ -13,7 +13,7 @@ npm install
 Turn on the hub with its green button (the LED blinks while it advertises), then:
 
 ```
-bare index.js
+npm start
 ```
 
 The CLI connects to the hub and stays connected, so the hub never powers itself off during a session. Key bindings:
