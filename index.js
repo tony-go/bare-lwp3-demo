@@ -1,5 +1,6 @@
 const tty = require('bare-tty')
-const { connect, PORT_A } = require('./lib/hub')
+const { connect } = require('./lib/hub')
+const { PORT_A } = require('./lib/lwp3')
 
 const SPEED = 50
 
