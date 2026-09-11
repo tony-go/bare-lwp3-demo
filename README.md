@@ -1,10 +1,10 @@
-# bare-lego
+# bare-lwp3-demo
 
-Drive a LEGO Technic Hub over Bluetooth Low Energy from Bare.
+Drive a LEGO(R) Technic hub over Bluetooth Low Energy from Bare.
 
 ![Driving the hub from a phone through Bare](.github/demo.gif)
 
-A proof of concept: [`bare-bluetooth`](https://github.com/holepunchto/bare-bluetooth) connects to the hub of a LEGO Technic set (tested with 42160) and drives its motors with [`bare-lwp3`](https://github.com/tonygo/bare-lwp3), a codec for the [LEGO Wireless Protocol 3](https://lego.github.io/lego-ble-wireless-protocol-docs/). No firmware changes, no app, just Bare.
+A proof of concept: [`bare-bluetooth`](https://github.com/holepunchto/bare-bluetooth) connects to the hub of a LEGO(R) Technic set (tested with 42160) and drives its motors with [`bare-lwp3`](https://github.com/tony-go/bare-lwp3), a codec for the [LEGO Wireless Protocol 3](https://lego.github.io/lego-ble-wireless-protocol-docs/), which the LEGO Group publishes under the MIT license. No firmware changes, no app, just Bare.
 
 ```
 npm install
@@ -48,3 +48,5 @@ The hub exposes a single GATT characteristic (`00001624-1212-efde-1623-785feabcd
 ## License
 
 Apache-2.0
+
+LEGO(R) is a trademark of the LEGO Group of companies which does not sponsor, authorize or endorse this project.

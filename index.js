@@ -26,7 +26,7 @@ function say(line) {
 }
 
 async function main() {
-  say('bare-lego')
+  say('bare-lwp3-demo')
   say('press the green button on the hub...')
 
   const hub = await connect()

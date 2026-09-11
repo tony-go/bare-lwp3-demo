@@ -12,7 +12,7 @@ const PAGE = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>bare-lego</title>
+<title>bare-lwp3-demo</title>
 <style>
   body {
     margin: 0;
@@ -54,7 +54,7 @@ const PAGE = `<!doctype html>
 </style>
 </head>
 <body>
-<h1>bare-lego</h1>
+<h1>bare-lwp3-demo</h1>
 <div class="battery" id="battery"></div>
 <div class="pad">
   <button class="fwd" onclick="send('/forward')">FWD</button>
@@ -102,7 +102,7 @@ function address() {
 }
 
 async function main() {
-  console.log('bare-lego remote')
+  console.log('bare-lwp3-demo remote')
   console.log('press the green button on the hub...')
 
   const hub = await connect()
