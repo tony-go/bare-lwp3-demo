@@ -27,6 +27,8 @@ space  stop and center
 q      quit and switch the hub off
 ```
 
+On startup the CLI prints the battery level and refuses to start if a motor is missing on ports A, B or D. The hub LED shows the state: green ready, blue driving, red braking.
+
 On first run macOS will ask for Bluetooth permission for your terminal.
 
 ## How it works

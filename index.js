@@ -1,6 +1,7 @@
 const tty = require('bare-tty')
 const { connect } = require('./lib/hub')
 const { Car } = require('./lib/car')
+const { LED_GREEN, LED_BLUE, LED_RED } = require('./lib/lwp3')
 
 const SPEED = 50
 
@@ -31,10 +32,16 @@ async function main() {
   const hub = await connect()
   say('connected to ' + hub.name)
 
+  hub.on('message', (message) => {
+    if (message.type === 'battery') say('battery ' + message.level + '%')
+  })
+  hub.requestBattery()
+
   const car = new Car(hub)
   say('calibrating steering...')
   await car.calibrate()
 
+  hub.led(LED_GREEN)
   say('ready')
   say('')
   for (const [key, action] of BINDINGS) say('  ' + key.padEnd(7) + action)
@@ -47,9 +54,11 @@ async function main() {
     const key = data.toString()
     if (key === KEY_UP) {
       car.drive(SPEED)
+      hub.led(LED_BLUE)
       say('forward')
     } else if (key === KEY_DOWN) {
       car.drive(-SPEED)
+      hub.led(LED_BLUE)
       say('backward')
     } else if (key === KEY_LEFT) {
       car.steer(-1)
@@ -59,6 +68,7 @@ async function main() {
       say('right')
     } else if (key === ' ') {
       car.stop()
+      hub.led(LED_RED)
       say('stop')
     } else if (key === 'q' || key === '\x03') {
       say('switching the hub off')
