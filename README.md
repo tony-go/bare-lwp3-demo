@@ -16,12 +16,15 @@ Turn on the hub with its green button (the LED blinks while it advertises), then
 npm start
 ```
 
-The CLI connects to the hub and stays connected, so the hub never powers itself off during a session. Key bindings:
+The CLI connects to the hub, calibrates the steering (the front wheels sweep to both ends to find the center), and stays connected so the hub never powers itself off during a session. Key bindings:
 
 ```
-k  move
-l  stop
-q  quit and switch the hub off
+up     drive forward
+down   drive backward
+left   steer left
+right  steer right
+space  stop and center
+q      quit and switch the hub off
 ```
 
 On first run macOS will ask for Bluetooth permission for your terminal.

@@ -1,12 +1,20 @@
 const tty = require('bare-tty')
 const { connect } = require('./lib/hub')
-const { PORT_A } = require('./lib/lwp3')
+const { Car } = require('./lib/car')
 
 const SPEED = 50
 
+const KEY_UP = '\x1b[A'
+const KEY_DOWN = '\x1b[B'
+const KEY_RIGHT = '\x1b[C'
+const KEY_LEFT = '\x1b[D'
+
 const BINDINGS = [
-  ['k', 'move'],
-  ['l', 'stop'],
+  ['up', 'drive forward'],
+  ['down', 'drive backward'],
+  ['left', 'steer left'],
+  ['right', 'steer right'],
+  ['space', 'stop and center'],
   ['q', 'quit and switch the hub off']
 ]
 
@@ -21,10 +29,15 @@ async function main() {
   say('press the green button on the hub...')
 
   const hub = await connect()
-
   say('connected to ' + hub.name)
+
+  const car = new Car(hub)
+  say('calibrating steering...')
+  await car.calibrate()
+
+  say('ready')
   say('')
-  for (const [key, action] of BINDINGS) say('  ' + key + '  ' + action)
+  for (const [key, action] of BINDINGS) say('  ' + key.padEnd(7) + action)
   say('')
 
   const keyboard = new tty.ReadStream(0)
@@ -32,11 +45,20 @@ async function main() {
 
   keyboard.on('data', (data) => {
     const key = data.toString()
-    if (key === 'k') {
-      hub.motor(PORT_A, SPEED)
-      say('move')
-    } else if (key === 'l') {
-      hub.motor(PORT_A, 0)
+    if (key === KEY_UP) {
+      car.drive(SPEED)
+      say('forward')
+    } else if (key === KEY_DOWN) {
+      car.drive(-SPEED)
+      say('backward')
+    } else if (key === KEY_LEFT) {
+      car.steer(-1)
+      say('left')
+    } else if (key === KEY_RIGHT) {
+      car.steer(1)
+      say('right')
+    } else if (key === ' ') {
+      car.stop()
       say('stop')
     } else if (key === 'q' || key === '\x03') {
       say('switching the hub off')
