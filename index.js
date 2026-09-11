@@ -1,7 +1,7 @@
 const tty = require('bare-tty')
 const { connect } = require('./lib/hub')
 const { Car } = require('./lib/car')
-const { LED_GREEN, LED_BLUE, LED_RED } = require('./lib/lwp3')
+const { LED_GREEN, LED_BLUE, LED_RED } = require('bare-lwp3')
 
 const SPEED = 50
 

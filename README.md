@@ -2,7 +2,7 @@
 
 Drive a LEGO Technic Hub over Bluetooth Low Energy from Bare.
 
-A proof of concept: [`bare-bluetooth`](https://github.com/holepunchto/bare-bluetooth) connects to the hub of a LEGO Technic set (tested with 42160) and drives its motors using the [LEGO Wireless Protocol 3](https://lego.github.io/lego-ble-wireless-protocol-docs/) directly. No firmware changes, no app, just Bare.
+A proof of concept: [`bare-bluetooth`](https://github.com/holepunchto/bare-bluetooth) connects to the hub of a LEGO Technic set (tested with 42160) and drives its motors with [`bare-lwp3`](https://github.com/tonygo/bare-lwp3), a codec for the [LEGO Wireless Protocol 3](https://lego.github.io/lego-ble-wireless-protocol-docs/). No firmware changes, no app, just Bare.
 
 ```
 npm install
