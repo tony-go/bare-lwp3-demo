@@ -2,7 +2,7 @@ const http = require('bare-http1')
 const os = require('bare-os')
 const { connect } = require('./lib/hub')
 const { Car } = require('./lib/car')
-const { LED_GREEN, LED_BLUE, LED_RED } = require('bare-lwp3')
+const lwp3 = require('bare-lwp3')
 
 const PORT = 8080
 const SPEED = 50
@@ -26,6 +26,9 @@ const PAGE = `<!doctype html>
     font-family: monospace;
   }
   h1 { color: #6ee7b7; font-size: 20px; margin: 0 0 8px; }
+  .battery { color: #9ca3af; font-size: 14px; min-height: 17px; }
+  .dots { display: flex; gap: 12px; }
+  .dot { width: 36px; height: 36px; border-radius: 50%; padding: 0; }
   .pad {
     display: grid;
     grid-template-columns: repeat(3, 96px);
@@ -52,6 +55,7 @@ const PAGE = `<!doctype html>
 </head>
 <body>
 <h1>bare-lego</h1>
+<div class="battery" id="battery"></div>
 <div class="pad">
   <button class="fwd" onclick="send('/forward')">FWD</button>
   <button class="left" onclick="send('/left')">LEFT</button>
@@ -59,11 +63,30 @@ const PAGE = `<!doctype html>
   <button class="right" onclick="send('/right')">RIGHT</button>
   <button class="rev" onclick="send('/backward')">REV</button>
 </div>
+<div class="dots">
+  <button class="dot" style="background: #3b82f6" onclick="send('/led/blue')"></button>
+  <button class="dot" style="background: #22c55e" onclick="send('/led/green')"></button>
+  <button class="dot" style="background: #eab308" onclick="send('/led/yellow')"></button>
+  <button class="dot" style="background: #a855f7" onclick="send('/led/purple')"></button>
+  <button class="dot" style="background: #ef4444" onclick="send('/led/red')"></button>
+  <button class="dot" style="background: #f9fafb" onclick="send('/led/white')"></button>
+</div>
 <button class="off" onclick="send('/off')">power off hub</button>
 <script>
   function send(path) {
     fetch(path, { method: 'POST' })
   }
+
+  async function refreshBattery() {
+    const res = await fetch('/battery')
+    const { level } = await res.json()
+    if (level !== null) {
+      document.getElementById('battery').textContent = 'battery ' + level + '%'
+    }
+  }
+
+  refreshBattery()
+  setInterval(refreshBattery, 30000)
 </script>
 </body>
 </html>
@@ -88,22 +111,38 @@ async function main() {
   const car = new Car(hub)
   console.log('calibrating steering...')
   await car.calibrate()
-  hub.led(LED_GREEN)
+  hub.led(lwp3.LED_GREEN)
+
+  let battery = null
+  hub.on('message', (message) => {
+    if (message.type === 'battery') battery = message.level
+  })
+  hub.requestBattery()
+  setInterval(() => hub.requestBattery(), 60000)
+
+  const colors = {
+    blue: lwp3.LED_BLUE,
+    green: lwp3.LED_GREEN,
+    yellow: lwp3.LED_YELLOW,
+    purple: lwp3.LED_PURPLE,
+    red: lwp3.LED_RED,
+    white: lwp3.LED_WHITE
+  }
 
   const routes = {
     '/forward': () => {
       car.drive(SPEED)
-      hub.led(LED_BLUE)
+      hub.led(lwp3.LED_BLUE)
     },
     '/backward': () => {
       car.drive(-SPEED)
-      hub.led(LED_BLUE)
+      hub.led(lwp3.LED_BLUE)
     },
     '/left': () => car.steer(-1),
     '/right': () => car.steer(1),
     '/stop': () => {
       car.stop()
-      hub.led(LED_RED)
+      hub.led(lwp3.LED_RED)
     },
     '/off': () => hub.off()
   }
@@ -113,6 +152,22 @@ async function main() {
       res.setHeader('content-type', 'text/html')
       res.end(PAGE)
       return
+    }
+
+    if (req.method === 'GET' && req.url === '/battery') {
+      res.setHeader('content-type', 'application/json')
+      res.end(JSON.stringify({ level: battery }))
+      return
+    }
+
+    if (req.method === 'POST' && req.url.startsWith('/led/')) {
+      const color = colors[req.url.slice(5)]
+      if (color !== undefined) {
+        hub.led(color)
+        res.statusCode = 204
+        res.end()
+        return
+      }
     }
 
     const action = req.method === 'POST' ? routes[req.url] : undefined
