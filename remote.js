@@ -116,9 +116,9 @@ async function main() {
   let battery = null
   hub.on('message', (message) => {
     if (message.type === 'battery') battery = message.level
+    if (message.type === 'error') console.error('hub error: ' + message.reason)
   })
-  hub.requestBattery()
-  setInterval(() => hub.requestBattery(), 60000)
+  hub.subscribeBattery()
 
   const colors = {
     blue: lwp3.LED_BLUE,

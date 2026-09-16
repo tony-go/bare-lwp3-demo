@@ -34,8 +34,9 @@ async function main() {
 
   hub.on('message', (message) => {
     if (message.type === 'battery') say('battery ' + message.level + '%')
+    if (message.type === 'error') say('hub error: ' + message.reason)
   })
-  hub.requestBattery()
+  hub.subscribeBattery()
 
   const car = new Car(hub)
   say('calibrating steering...')
