@@ -31,7 +31,7 @@
     "bare-bluetooth": "^0.3.0",
     "bare-events": "^2.9.2",
     "bare-http1": "^4.6.1",
-    "bare-lwp3": "file:../bare-lwp3",
+    "bare-lwp3": "^0.1.0",
     "bare-os": "^3.9.3",
     "bare-tty": "^5.2.1"
   },
