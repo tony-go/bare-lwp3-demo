@@ -32,8 +32,13 @@ async function main() {
   const hub = await connect()
   say('connected to ' + hub.name)
 
+  let reported = false
   hub.on('message', (message) => {
-    if (message.type === 'battery') say('battery ' + message.level + '%')
+    if (message.type === 'battery' && !reported) {
+      reported = true
+      say('battery ' + message.level + '%')
+      hub.unsubscribeBattery()
+    }
     if (message.type === 'error') say('hub error: ' + message.reason)
   })
   hub.subscribeBattery()
