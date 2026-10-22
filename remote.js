@@ -184,7 +184,8 @@ async function main() {
 
   server.listen(PORT, '0.0.0.0')
   server.on('listening', () => {
-    console.log('remote ready: http://' + address() + ':' + PORT + ' (phone on the same wifi)')
+    console.log('remote ready: http://localhost:' + PORT)
+    console.log('from a phone:  http://' + address() + ':' + PORT)
   })
 
   hub.on('disconnect', () => {

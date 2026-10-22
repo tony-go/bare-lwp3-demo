@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/tony-go/bare-lwp3-demo#readme",
   "dependencies": {
-    "bare-bluetooth": "^0.3.0",
+    "bare-bluetooth": "^0.6.3",
     "bare-events": "^2.9.2",
     "bare-http1": "^4.6.1",
     "bare-lwp3": "^0.1.0",
